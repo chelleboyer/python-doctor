@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-doctor"
+dynamic = ["version"]
+description = "Local-first, read-only diagnostic and teaching CLI for Python environments."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+# 3.10 is the floor because the data model uses PEP 604 unions at runtime.
+# TODO: confirm against the current AI Makerspace prerequisites before release.
+requires-python = ">=3.10"
+# Zero runtime dependencies by design: the tool must work on a bare interpreter.
+dependencies = []
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Debuggers",
+]
+
+[project.scripts]
+python-doctor = "python_doctor.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.hatch.version]
+path = "src/python_doctor/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/python_doctor"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "integration: creates real virtual environments and runs subprocesses",
+]
