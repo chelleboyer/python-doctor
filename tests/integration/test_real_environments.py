@@ -201,5 +201,10 @@ def test_real_venv_with_deleted_base_is_reported(project, tmp_path, clean_env):
     if not (venv / "bin" / "python").is_symlink():
         pytest.skip("venv did not use symlinks on this platform")
     shutil.rmtree(tmp_path / "base")
+    if (venv / "bin" / "python").exists():
+        # macOS framework builds resolve the base to the real framework binary,
+        # so deleting our symlinked "base" doesn't break the venv. The venv is
+        # healthy and Doctor correctly says so; this scenario can't be built here.
+        pytest.skip("venv does not depend on the deleted base on this platform")
     found = finding_ids(run_scan(ctx_for(project, probe_enabled=False)))
     assert "venv.broken_interpreter_link" in found or "venv.base_missing" in found
